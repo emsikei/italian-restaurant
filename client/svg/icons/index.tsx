@@ -1,0 +1,9 @@
+export { default as ArrowLeftIcon } from './ArrowLeft';
+export { default as ArrowRightIcon } from './ArrowRight';
+export { default as CartIcon } from './Cart';
+export { default as CloseIcon } from './Close';
+export { default as CloseTippyIcon } from './CloseTippy';
+export { default as MoreInfoIcon } from './MoreInfo';
+export { default as TrashIcon } from './Trash';
+export { default as MenuArrowRightIcon } from './MenuArrowRight';
+export { default as MenuArrowLeftIcon } from './MenuArrowLeft';

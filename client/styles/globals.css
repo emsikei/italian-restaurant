@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: only light !important;
+}
+
+html {
+  scroll-padding-top: 100px;
+  @apply scroll-smooth
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  /* font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif; */
+  }
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    color: white;
+    background: black;
+    height: 100vh;
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-vp_body;
+  }
+}
+
+.slick-list {margin: 0 -5px;}
+.slick-slide>div {padding: 0 5px;}
+
+.swiper-pagination-bullet-active {
+  background: #CBA16D !important;
+}
+
+#cart_pop_up::-webkit-scrollbar {
+  width: 8px;
+}
+
+#cart_pop_up::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+}
+
+#cart_pop_up::-webkit-scrollbar-thumb {
+  background-color: #CBA16D;
+  outline: 1px solid #CBA16D;
+  border-radius: 8px;
+}
+
+#cart_pop_up {
+  scrollbar-width: thin;
+}
+
+#cart_pop_up {
+  scrollbar-color: #CBA16D #e0e0e0;
+  scrollbar-width: thin;
+}
+
+.img {
+  width: 90%;
+  height: auto;
+}
+
+.img-card {
+  max-width: 70%;
+  height: auto;
+}

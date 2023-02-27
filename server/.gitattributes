@@ -1,0 +1,2 @@
+dist/*.js linguist-vendored
+dist/* linguist-vendored

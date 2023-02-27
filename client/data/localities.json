@@ -1,0 +1,27 @@
+[
+    {
+        "id": 1,
+        "name": "Chișinău",
+        "deliveryCost": 50
+    },
+    {
+        "id": 2,
+        "name": "Băcioi",
+        "deliveryCost": 80
+    },
+    {
+        "id": 3,
+        "name": "Durlești",
+        "deliveryCost": 90
+    },
+    {
+        "id": 4,
+        "name": "Băcioi",
+        "deliveryCost": 70
+    },
+    {
+        "id": 5,
+        "name": "Stăuceni",
+        "deliveryCost": 70
+    }
+]

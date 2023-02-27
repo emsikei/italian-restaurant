@@ -1,0 +1,1403 @@
+openapi: 3.0.0
+info:
+  title: Italian Restaurant API
+  description: Docs for Italian Restaurant API.
+  version: 1.0.0
+host: localhost:5000
+servers:
+  - url: "/api/v1"
+schemes:
+  - http
+tags:
+  - product
+  - category
+  - banner
+  - locality
+  - menu
+  - user
+  - size
+paths:
+
+  /users/me:
+    get:
+      security:
+        - authToken: []
+      tags:
+        - user
+      summary: Get user info (AUTH)
+      description: Get user info
+      responses:
+        "200":
+          description: User info
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+
+  /auth/register:
+    post:
+      tags:
+        - auth
+      summary: User registration
+      description: Registers the user, returns access & refresh token pair in cookie
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegister"
+            example:
+              name: "name123"
+              email: "testmail@gmail.com"
+              password: "password123"
+      responses:
+        "200":
+          description: "User succesfully registered"
+        "422":
+          description: "User validation error"
+          schema:
+            $ref: "#/components/schemas/ValidationError"
+
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: User login
+      description: Logins the user, returns access & refresh token pair in cookie
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLogin"
+            example:
+              email: "testmail@gmail.com"
+              password: "password123"
+      responses:
+        "200":
+          description: "User succesfully logged in"
+        "422":
+          description: "User validation error"
+          schema:
+            $ref: "#/components/schemas/ValidationError"
+
+  /auth/refresh:
+    post:
+      tags:
+        - auth
+      summary: Access & refresh token pair refresh
+      description: Refreshes access & refresh token pair and returns it in cookie
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLogin"
+      responses:
+        "200":
+          description: "Tokens were successfuly refreshed"
+        "404":
+          description: "Couldn't find the refresh session"
+          content:
+            application/json:
+              schema: 
+                properties:
+                  - status
+                  - message
+                example:
+                  status: 404
+                  message: "REFRESH_SESSION_NOT_FOUND"
+        "400":
+          description: "The refresh session is expired or fingerprint doesn't match (accordingly)"
+          content:
+            application/json:
+              schema: 
+                properties:
+                  - status
+                  - message
+                example:
+                  status: 400
+                  message: "TOKEN_EXPIRED / INVALID_REFRESH_SESSION"
+
+  # /auth/password-change:
+  #   put:
+  #     security:
+  #       - authToken: []
+  #     tags:
+  #       - auth
+  #     summary: Password change
+  #     description: Password change
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             $ref: "#/components/schemas/PasswordChange"
+  #           example:
+  #             email: "testmail@gmail.com"
+  #             oldPassword: "password123"
+  #             newPassword: "newPassword"
+  #     responses:
+  #       "200":
+  #         description: "Successfully changed the password"
+  #       "422":
+  #         description: "Password change validation error"
+  #         schema:
+  #           $ref: "#/components/schemas/ValidationError"
+  #       "404":
+  #         description: "Error: USER_NOT_FOUND"
+  #       "400":
+  #         description: "Errors: INVALID_PASSWORD, NEW_PASSWORD_EQUALS_TO_OLD"
+  #       "401":
+  #         description: Unauthorized error
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: "#/components/schemas/UnauthorizedError"
+
+  # /auth/password-reset/email-send:
+  #   post:
+  #     tags:
+  #       - auth
+  #     summary: Send email with password reset link
+  #     description: Send email with password reset link
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: object
+  #             required:
+  #               - email
+  #             properties:
+  #               email:
+  #                 type: string
+  #                 format: email
+  #           example:
+  #             email: "testmail@gmail.com"
+  #     responses:
+  #       "200":
+  #         description: "Email successufully sent to given email"
+  #       "422":
+  #         description: "No email provided"
+  #         schema:
+  #           $ref: "#/components/schemas/ValidationError"
+  #       "404":
+  #         description: "Error: USER_NOT_FOUND"
+
+  # /auth/password-reset/{token}:
+  #   get:
+  #     tags:
+  #       - auth
+  #     summary: Process link which was sent to email
+  #     description: Process link which was sent to email
+  #     parameters:
+  #       - in: path
+  #         name: token
+  #         schema:
+  #           type: string
+  #         required: true
+  #         description: The token from password reset link
+  #     responses:
+  #       "200":
+  #         description: "Redirects to client password reset page"
+  #       "400":
+  #         description: "Errors: NOT_VALID_TOKEN, LINK_IS_EXPIRED, LINK_HAS_BEEN_ALREADY_USED"
+
+  # /auth/password-reset:
+  #   put:
+  #     tags:
+  #       - auth
+  #     summary: Reset password
+  #     description: Send new password and token for password reset
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             $ref: "#/components/schemas/PasswordReset"
+  #           example:
+  #             newPassword: "passwordNew"
+  #             token: "****-****-****-****"
+  #     responses:
+  #       "422":
+  #         description: "Password reset validation error"
+  #         schema:
+  #           $ref: "#/components/schemas/ValidationError"
+  #       "400":
+  #         description: "Errors: NOT_VALID_TOKEN, LINK_IS_EXPIRED"
+
+  /menu/online-menu:
+    get:
+      tags:
+        - menu
+      summary: Get online menu
+      description: Get online menu
+      responses:
+        "200":
+          description: The online menu
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - translations
+                  properties:
+                    _id:
+                      type: string
+                    translations:
+                      type: object
+                      properties:
+                        ro:
+                          type: object
+                          properties:
+                            name: 
+                              type: string
+                        ru:
+                          type: object
+                          properties:
+                            name: 
+                              type: string
+                        en:
+                          type: object
+                          properties:
+                            name: 
+                              type: string
+                    products:
+                      type: array
+                      items:
+                        type: object
+                        $ref: "#/components/schemas/Product"
+
+  /menu/online-menu/{slug}:
+    get:
+      tags:
+        - menu
+      summary: Get all products for single category in online menu
+      description: Get all products for single category in online menu
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+          description: The category's slug
+      responses:
+        responses:
+          "200":
+            description: Single online menu category
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    translations:
+                      type: object
+                      properties:
+                        ro:
+                          type: object
+                          properties:
+                            name: 
+                              type: string
+                        ru:
+                          type: object
+                          properties:
+                            name: 
+                              type: string
+                        en:
+                          type: object
+                          properties:
+                            name: 
+                              type: string
+                    products:
+                      type: array
+                      items:
+                        type: object
+                        $ref: "#/components/schemas/Product"
+          "404":
+            description: "Resource not found"
+            schema:
+              $ref: "#/components/schemas/NotFoundError"
+
+  /menu/offline-menu:
+    get:
+      tags:
+        - menu
+      summary: Get offline menu
+      description: Get offline menu
+      responses:
+        "200":
+          description: The offline menu
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - translations
+                  properties:
+                    _id:
+                      type: string
+                    translations:
+                      type: object
+                      properties:
+                        ro:
+                          type: object
+                          properties:
+                            name: 
+                              type: string
+                        ru:
+                          type: object
+                          properties:
+                            name: 
+                              type: string
+                        en:
+                          type: object
+                          properties:
+                            name: 
+                              type: string
+                    products:
+                      type: array
+                      items:
+                        type: object
+                        $ref: "#/components/schemas/Product"
+
+  /sizes:
+    get:
+      security:
+        - authToken: []
+      tags:
+        - size
+      summary: Get all the product sizes [ADMIN]
+      description: Get all the product sizes
+      responses:
+        "200": # status code
+          description: A JSON array of product sizes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: "#/components/schemas/Size"
+        "401":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsError"
+    post:
+      security:
+        - authToken: []
+      tags:
+        - size
+      summary: Create new size [ADMIN]
+      description: Create new size
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Size"
+            example:
+              translations:
+                ro:
+                  value: "500 g"
+                ru:
+                  value: "500 г"
+                en:
+                  value: "500 g"
+      responses:
+        "200":
+          description: "Product size was successfully created"
+          schema:
+            $ref: "#/components/schemas/Size"
+        "422":
+          description: "Size validation error"
+          schema:
+            $ref: "#/components/schemas/ValidationError"
+        "404":
+          description: "Resource not found"
+          schema:
+            $ref: "#/components/schemas/NotFoundError"
+        "401":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsError"
+
+    put:
+      security:
+        - authToken: []
+      tags:
+        - size
+      summary: Update a product size [ADMIN]
+      description: Update a product size
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Size"
+            example:
+              _id: "62c9c25667eee57d19d4951e"
+              translations:
+                ro:
+                  value: "500 g"
+                ru:
+                  value: "500 г"
+                en: 
+                  value: "500 g"
+      responses:
+        "200":
+          description: "Size was successfully updated"
+          schema:
+            $ref: "#/components/schemas/Size"
+        "422":
+          description: "Size validation error"
+          schema:
+            $ref: "#/components/schemas/ValidationError"
+        "404":
+          description: "Resource not found"
+          schema:
+            $ref: "#/components/schemas/NotFoundError"
+        "401":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsError"
+
+  /products:
+    get:
+      security:
+        - authToken: []
+      tags:
+        - product
+      summary: Get all the products [ADMIN]
+      description: Get all the products
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: The current page
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: The number of items per page
+      responses:
+        "200":
+          description: A JSON array of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: "#/components/schemas/Product"
+        "401":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsError"
+    post:
+      security:
+        - authToken: []
+      tags:
+        - product
+      summary: Create new product [ADMIN]
+      description: Create new product
+      requestBody:
+        description: Optional description in *Markdown*
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - image  
+                - product
+              properties:
+                image:
+                  type: string
+                  format: binary
+                product:
+                  type: object
+      responses:
+        "200":
+          description: "Product was successfully created"
+          schema:
+            $ref: "#/components/schemas/Product"
+        "422":
+          description: "Product validation error"
+          schema:
+            $ref: "#/components/schemas/ValidationError"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+        "401":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsError"
+    put:
+      security:
+        - authToken: []
+      tags:
+        - product
+      summary: Update a product [ADMIN]
+      description: Update a product
+      requestBody:
+        description: Optional description in *Markdown*
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - product
+              properties:
+                image:
+                  type: string
+                  format: binary
+                product:
+                  type: object
+      responses:
+        "200":
+          description: "Product was successfully updated"
+          schema:
+            $ref: "#/components/schemas/Product"
+        "422":
+          description: "Product validation error"
+          schema:
+            $ref: "#/components/schemas/ValidationError"
+        "404":
+          description: "Resource not found"
+          schema:
+            $ref: "#/components/schemas/NotFoundError"
+        "401":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsError"
+  
+  /products/{id}:
+    delete:
+      security:
+        - authToken: []
+      tags:
+        - product
+      summary: Delete a product [ADMIN]
+      description: Delete a product
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The product's id you want to delete
+      responses:
+        "404":
+          description: "Resource not found"
+          schema:
+            $ref: "#/components/schemas/NotFoundError"
+        "401":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsError"
+
+  /categories:
+    get:
+      security:
+        - authToken: []
+      tags:
+        - category
+      summary: Get all the categories [ADMIN]
+      description: Get all the categories
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: The current page
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: The number of items per page
+      responses:
+        "200": # status code
+          description: A JSON array of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: "#/components/schemas/Category"
+        "401":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsError"
+    post:
+      security:
+        - authToken: []
+      tags:
+        - category
+      summary: Create new category [ADMIN]
+      description: Create new category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Category"
+            example:
+              translations:
+                ro:
+                  name: "Pizza"
+                ru:
+                  name: "Пицца"
+                en:
+                  name: "Pizza"
+      responses:
+        "200":
+          description: "Category was successfully created"
+          schema:
+            $ref: "#/components/schemas/Category"
+        "422":
+          description: "Category validation error"
+          schema:
+            $ref: "#/components/schemas/ValidationError"
+        "404":
+          description: "Resource not found"
+          schema:
+            $ref: "#/components/schemas/NotFoundError"
+        "401":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsError"
+
+    put:
+      security:
+        - authToken: []
+      tags:
+        - category
+      summary: Update a category [ADMIN]
+      description: Update a category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Category"
+            example:
+              _id: "62c9c25667eee57d19d4951e"
+              translations:
+                ro:
+                  name: "Pizza"
+                ru:
+                  name: "Пицца"
+                en: 
+                  name: "Pizza"
+      responses:
+        "200":
+          description: "Category was successfully updated"
+          schema:
+            $ref: "#/components/schemas/Category"
+        "422":
+          description: "Category validation error"
+          schema:
+            $ref: "#/components/schemas/ValidationError"
+        "404":
+          description: "Resource not found"
+          schema:
+            $ref: "#/components/schemas/NotFoundError"
+        "401":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsError"
+
+  /categories/{id}:
+    delete:
+      security:
+        - authToken: []
+      tags:
+        - category
+      summary: Delete a category [ADMIN]
+      description: Delete a category (deletes all the products that have this category)
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The category's id you want to delete
+      responses:
+        "404":
+          description: "Resource not found"
+          schema:
+            $ref: "#/components/schemas/NotFoundError"
+        "401":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsError"
+
+  /banners:
+    get: 
+      tags:
+        - banner
+      summary: Get all the banners
+      description: Get all the banners
+      responses:
+        "200": # status code
+          description: A JSON array of banners
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: "#/components/schemas/Banner"
+    post:
+      security:
+        - authToken: []
+      tags:
+        - banner
+      summary: Upload a banner [ADMIN]
+      description: Upload a banner
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - banner
+              properties:
+                banner:
+                  type: string
+                  format: binary
+      responses:
+        "200": # status code
+            description: Uploaded banner info
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Banner"
+        "401":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsError"
+    
+  /banners/{publicId}:
+    put:
+      security:
+        - authToken: []
+      tags:
+        - banner
+      summary: Update a banner [ADMIN]
+      description: Upload new banner that will replace the old one
+      parameters:
+        - in: path
+          name: publicId
+          schema:
+            type: string
+          required: true
+          description: The banner's publiId you want to update
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - banner
+              properties:
+                banner:
+                  type: string
+                  format: binary
+      responses:
+        "200": # status code
+            description: Updated banner info
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Banner"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+        "401":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsError"
+    delete:
+      security:
+        - authToken: []
+      tags:
+        - banner
+      summary: Delete a banner [ADMIN]
+      description: Delete a banner
+      parameters:
+        - in: path
+          name: publicId
+          schema:
+            type: string
+          required: true
+          description: The banner's publiId you want to delete
+      responses:
+        "200": # status code
+            description: Deleted banner info
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Banner"
+        "404":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+        "401":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsError"
+
+  /localities:
+    get: 
+      tags:
+        - locality
+      summary: Get all the delivery localities
+      description: Get all the delivery localities
+      responses:
+        "200": # status code
+          description: A JSON array of localities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: "#/components/schemas/Locality"
+    post:
+      security:
+        - authToken: []
+      tags:
+        - locality
+      summary: Create new delivery locality [ADMIN]
+      description: Create new delivery locality
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Locality"
+            example:
+              name: "Chisinau"
+              deliveryCost: 50
+      responses:
+        "200":
+          description: "Locality was successfully created"
+          schema:
+            $ref: "#/components/schemas/Locality"
+        "422":
+          description: "Locality validation error"
+          schema:
+            $ref: "#/components/schemas/ValidationError"
+        "401":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsError"
+    
+    put:
+      security:
+        - authToken: []
+      tags:
+        - locality
+      summary: Update a delivery locality [ADMIN]
+      description: Update a delivery locality
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Locality"
+            example:
+              _id: "12345689"
+              name: "Chisinau"
+              deliveryCost: 60
+      responses:
+        "200":
+          description: "Locality was successfully updated"
+          schema:
+            $ref: "#/components/schemas/Locality"
+        "422":
+          description: "Locality validation error"
+          schema:
+            $ref: "#/components/schemas/ValidationError"
+        "404":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+        "401":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsError"
+  
+  /localities/{id}:
+    delete: 
+      security:
+        - authToken: []
+      tags:
+        - locality
+      summary: Delete a locality [ADMIN]
+      description: Delete a locality
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The locality's id you want to delete
+      responses:
+        "200": # status code
+          description: Deleted locality
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Locality"
+        "404":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+        "401":
+          description: Unauthorized error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsError"
+
+components:
+  schemas:
+    Locality: 
+      type: object
+      required:
+        - name
+        - deliveryCost
+      properties:
+        _id:
+          type: string
+        name: 
+          type: string
+        deliveryCost: 
+          type: number
+    Banner: 
+      type: object
+      properties: 
+        _id:
+          type: string
+        publicId:
+          type: string
+        bannerUrl: 
+          type: string
+
+    Size:
+      type: object
+      properties:
+        _id: 
+          type: string
+        translations: 
+          type: object
+          properties: 
+            ro: 
+              type: object
+              properties:
+                value: 
+                  type: string
+            ru: 
+              type: object
+              properties:
+                value: 
+                  type: string
+            en: 
+              type: object
+              properties:
+                value: 
+                  type: string
+
+    Product:
+      type: object
+      required:
+        - category
+        - translations
+        - status
+        - discount
+        - pricesAndSizes
+        - defaultSize
+      properties:
+        _id:
+          type: string
+        category:
+          type: string
+        status: 
+          type: object
+          properties:
+            onlineMenu:
+              type: boolean
+            offlineMenu: 
+              type: boolean
+        pricesAndSizes: 
+          type: array
+          items: 
+            type: object
+            properties:
+              size:
+                type: string
+              price:  
+                type: number
+        defaultPriceAndSize: 
+          type: object
+          properties:
+            size:
+              type: string
+            price:  
+              type: number
+        discount:
+          type: number
+          default: 0
+        recommendedProducts:
+          type: array
+          description: Array of recommeded products id
+          items: 
+            type: object
+        publicId:
+          type: string
+        imageUrl:
+          type: string
+        translations:
+          type: object
+          properties: 
+            ro: 
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+            en: 
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string              
+            ru: 
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string 
+
+    Category:
+      type: object
+      required:
+        - translations
+      properties:
+        _id:
+          type: string
+        translations:
+          type: object
+          properties:
+            ro:
+              type: object
+              properties:
+                name: 
+                  type: string
+            ru:
+              type: object
+              properties:
+                name: 
+                  type: string
+            en:
+              type: object
+              properties:
+                name: 
+                  type: string
+        products:
+          type: array
+          items:
+            type: string
+
+    User:
+      type: object
+      properties: 
+        id: 
+          type: string
+        email:
+          type: string
+          format: email
+        name: 
+          type: string
+        roles: 
+          type: array
+          items: 
+            type: string
+            enum: ['USER', 'ADMIN']
+
+    UserLogin:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    UserRegister:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+          maxLength: 12
+
+    PasswordChange:
+      type: object
+      required:
+        - email
+        - oldPassword
+        - newPassword
+      properties:
+        email:
+          type: string
+          format: email
+        oldPassword:
+          type: string
+        newPassword:
+          type: string
+
+    PasswordReset:
+      type: object
+      required:
+        - newPassword
+        - token
+      properties:
+        newPassword:
+          type: string
+        token:
+          type: string
+
+    ValidationError:
+      type: object
+      properties:
+        status:
+          type: number
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+    NotFoundError:
+      type: object
+      properties:
+        status:
+          type: number
+        message:
+          type: string
+      example: 
+        status: 404
+        message: "RESOURCE_NOT_FOUND"
+
+    UnauthorizedError:
+      type: object
+      properties:
+        status:
+          type: number
+        message:
+          type: string
+      example:
+        status: 401
+        message: "NO_ACCESS_TOKEN"
+    
+    InsufficientPermissionsError:
+      type: object
+      properties:
+        status:
+          type: number
+        message:
+          type: string
+      example:
+        status: 403
+        message: "INSUFFICIENT_PERMISSIONS"
+
+  securitySchemes:
+    authToken:
+      name: "authToken"
+      in: cookie
+      type: apiKey
+      description: "JWT authorization token sent in the authToken cookie."

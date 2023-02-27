@@ -1,0 +1,93 @@
+[
+    {
+      "id": "633876ade26452c4d2057551",
+      "slug": "pizza",
+      "translations": {
+        "ro": {
+          "name": "Pizza"
+        },
+        "ru": {
+          "name": "Пицца"
+        },
+        "en": {
+          "name": "Pizza"
+        }
+      }
+    },
+    {
+      "id": "633876ade26452c4d2057552",
+      "slug": "pizza-mix",
+      "translations": {
+        "ro": {
+          "name": "Pizza mixta"
+        },
+        "ru": {
+          "name": "Пицца микс"
+        },
+        "en": {
+          "name": "Pizza mix"
+        }
+      }
+    },
+    {
+        "id": "634bece48f6fba24cb003540",
+        "slug": "wine-red",
+        "translations": {
+          "ro": {
+            "name": "Vin Rosu"
+          },
+          "ru": {
+            "name": "Красное вино"
+          },
+          "en": {
+            "name": "Red Wine"
+          }
+        }
+    },
+    {
+      "id": "634bece48f6fba24cb003540",
+      "slug": "wine-white",
+      "translations": {
+        "ro": {
+          "name": "Vin Alb"
+        },
+        "ru": {
+          "name": "Белое вино"
+        },
+        "en": {
+          "name": "White Wine"
+        }
+      }
+  },
+    {
+        "id": "634becfb8f6fba24cb003541",
+        "slug": "beer",
+        "translations": {
+          "ro": {
+            "name": "Bere"
+          },
+          "ru": {
+            "name": "Вино"
+          },
+          "en": {
+            "name": "Beer"
+          }
+        }
+    },
+    {
+        "id": "634bed228f6fba24cb003542",
+        "slug": "drinks",
+        "translations": {
+          "ro": {
+            "name": "Bauturi"
+          },
+          "ru": {
+            "name": "Напитки"
+          },
+          "en": {
+            "name": "Drinks"
+          }
+        }
+    }
+  ]
+  

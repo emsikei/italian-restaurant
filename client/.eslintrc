@@ -1,0 +1,32 @@
+{
+  "parserOptions": {
+    "ecmaVersion": "latest"
+  },
+  "env": {
+    "es6": true
+  },
+  "extends": [
+    "wesbos"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "rules": {
+    "no-unused-vars": "off",
+    "react/destructuring-assignment": "off",
+    "import/no-unresolved": [
+      "off",
+      {
+        "caseSensitive": false
+      }
+    ],
+    "no-console": "warn",
+    "prettier/prettier": [
+      "error",
+      {
+        "trailingComma": "es5",
+        "singleQuote": true,
+        "printWidth": 120,
+        "tabWidth": 4
+      }
+    ]
+  }
+}

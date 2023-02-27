@@ -1,0 +1,39 @@
+{
+    "compilerOptions": {
+        "target": "es2017",
+        "moduleResolution": "node",
+        "module": "commonjs",
+        "outDir": "build",
+        "strict": true,
+        "rootDir": "src",
+        "baseUrl": "./src",
+        "paths": {
+            "@/resources/*": [
+                "resources/*"
+            ],
+            "@/utils/*": [
+                "utils/*"
+            ],
+            "@/middleware/*": [
+                "middleware/*"
+            ],
+            "@/config/*": [
+                "config/*"
+            ],
+            "@/db/*": [
+                "db/*"
+            ],
+            "@/dtos/*": [
+                "dtos/*"
+            ],
+            "@/helpers/*": [
+                "helpers/*"
+            ]
+        },
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
+    },
+}
