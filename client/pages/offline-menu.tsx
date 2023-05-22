@@ -30,7 +30,7 @@ const OfflineMenuPage = ({ menu }: IOfflineMenuProps) => {
 };
 
 export async function getStaticProps(): Promise<GetStaticPropsResult<IOfflineMenuProps>> {
-    const res = await fetch(`${process.env.SSR_API_URL}/menu/offline-menu`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/menu/offline-menu`);
     const menu: ICategory[] = await res.json();
 
     return {

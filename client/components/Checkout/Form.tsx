@@ -19,6 +19,12 @@ import { useCart } from '../../contexts/cart.context';
 import useCartCalc from '../../hooks/useCartCalc';
 import { mapCartItemsToOrderItems } from '../../helpers/mapper';
 import { poster } from '../../lib/fetcher';
+import {
+    DiscountCalculator,
+    FixedAmountDiscountStrategy,
+    NoDiscountStrategy,
+    PercentageDiscountStrategy,
+} from '../../services/DiscountCalculator';
 
 dayjs.extend(calendar);
 dayjs.extend(isToday);
@@ -142,6 +148,15 @@ const CheckoutForm = () => {
 
         const { hasErrors, errors } = validate(formValues);
 
+        const discountCalculator = new DiscountCalculator();
+        discountCalculator.setDiscountStrategy(new NoDiscountStrategy());
+
+        if (deliveryCost > 0) {
+            discountCalculator.setDiscountStrategy(new PercentageDiscountStrategy(5));
+        } else {
+            discountCalculator.setDiscountStrategy(new FixedAmountDiscountStrategy(total));
+        }
+
         if (!hasErrors) {
             const order: IOrder = {
                 orderTime: dayjs().toDate(),
@@ -154,7 +169,7 @@ const CheckoutForm = () => {
                 items: mapCartItemsToOrderItems(cart.items),
                 subtotal,
                 deliveryCost,
-                total,
+                total: discountCalculator.calculateDiscount(total),
                 comment: formValues.comment,
             };
 

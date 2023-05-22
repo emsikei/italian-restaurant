@@ -31,14 +31,6 @@ const Category = ({ category: { _id, translations, slug, products } }: ICategory
                     <h1 className="font-bold text-2xl sm:text-3xl md:text-4xl mb-2">
                         {translations[locale as LocaleType].name}
                     </h1>
-                    <Link href={`/online-menu/${slug}`}>
-                        <a className="font-medium text-md flex justify-between items-center">
-                            {/* <MenuArrow /> */}
-                            <BiListPlus />
-                            {/* <span className="ml-2.5">spre meniu {translations[locale as LocaleType].name}</span> */}
-                            <span className="text-xs sm:text-sm md:text-md lg:text-lg ml-2.5">{t.wholeCategory}</span>
-                        </a>
-                    </Link>
                 </div>
                 <ProductSlider
                     id={_id as string}

@@ -30,7 +30,7 @@ const CategoryPage = ({ category }: ICategoryProps) => {
 };
 
 export async function getStaticPaths() {
-    const res = await fetch(`${process.env.SSR_API_URL}/categories/slugs`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/slugs`);
     const slugs: [{ slug: string }] = await res.json();
 
     const categorySlugs: any = [];
@@ -48,7 +48,7 @@ export async function getStaticPaths() {
 }
 
 export const getStaticProps = async (context: any) => {
-    const res = await fetch(`${process.env.SSR_API_URL}/menu/online-menu/${context.params.slug}`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/menu/online-menu/${context.params.slug}`);
     const category = await res.json();
 
     if (res.status === 404) {
