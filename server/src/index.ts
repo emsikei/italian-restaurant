@@ -29,6 +29,8 @@ const app = new App(
 
 const server = app.listen();
 
+console.log('hello world');
+
 runTasks();
 
 export default server;

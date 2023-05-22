@@ -7,7 +7,8 @@ import { sizes, products, categories, localities } from '../seed.data';
 const data = { sizes, categories, products, localities };
 
 const seed = async (): Promise<void> => {
-    const { MONGO_URL } = process.env;
+    const MONGO_URL =
+        'mongodb+srv://root:root@emsikeicluster.ljpjpbz.mongodb.net/vinopizza_db?retryWrites=true&w=majority';
 
     mongoose.set('strictQuery', false);
 

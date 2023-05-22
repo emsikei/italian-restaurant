@@ -13,6 +13,7 @@ import {
 import validationMiddleware from '@/middleware/validation.middleware';
 import authMiddleware from '@/middleware/auth.middleware';
 import { accessTokenOptions, refreshTokenOptions } from '@/utils/constants';
+import Logger from '../logger/logger.service';
 
 class AuthController implements IController {
     public path: string = '/auth';
@@ -20,6 +21,8 @@ class AuthController implements IController {
     public router: Router = Router();
 
     private _authService = new AuthService();
+
+    private _logger = Logger.getInstance();
 
     constructor() {
         this.initialiseRoutes();
@@ -76,6 +79,8 @@ class AuthController implements IController {
             res.cookie('accessToken', userData.accessToken, accessTokenOptions);
             res.cookie('refreshToken', userData.refreshToken, refreshTokenOptions);
 
+            this._logger.log('Auth register!');
+
             return res.status(200).json({ message: 'User successfully registered!' });
         } catch (error) {
             next(error);
@@ -100,6 +105,8 @@ class AuthController implements IController {
             res.cookie('accessToken', userData.accessToken, accessTokenOptions);
             res.cookie('refreshToken', userData.refreshToken, refreshTokenOptions);
 
+            this._logger.log('Auth login!');
+
             return res.status(200).json({ message: 'User logged in!' });
         } catch (error) {
             next(error);
@@ -115,6 +122,8 @@ class AuthController implements IController {
 
             res.clearCookie('accessToken');
             res.clearCookie('refreshToken');
+
+            this._logger.log('Auth logout!');
 
             return res.status(200).json({ message: 'Logged out!' });
         } catch (error) {
@@ -135,6 +144,8 @@ class AuthController implements IController {
             res.cookie('accessToken', authResponse.accessToken, accessTokenOptions);
             res.cookie('refreshToken', authResponse.refreshToken, refreshTokenOptions);
 
+            this._logger.log('Auth refresh tokens!');
+
             return res.status(200).json({ message: 'Tokens refreshed!' });
         } catch (error) {
             next(error);
@@ -147,6 +158,8 @@ class AuthController implements IController {
 
             await this._authService.sendEmailForPasswordReset(email);
 
+            this._logger.log('Auth send email for password reset!');
+
             return res.status(200).json({ message: 'Email sent' });
         } catch (error) {
             next(error);
@@ -158,6 +171,8 @@ class AuthController implements IController {
             const { token } = req.params;
 
             await this._authService.processTokenForPasswordReset(token);
+
+            this._logger.log('Auth process token for password reset!');
 
             return res.redirect(`${process.env.CLIENT_URL}/auth/password-reset/${token}`);
         } catch (error) {
@@ -175,6 +190,8 @@ class AuthController implements IController {
 
             await this._authService.resetPassword(token, newPassword);
 
+            this._logger.log('Auth reset password!');
+
             return res.status(200).json({ message: 'Password reseted successfully' });
         } catch (error) {
             // TODO: redirect to page with error about token
@@ -191,6 +208,8 @@ class AuthController implements IController {
                 oldPassword,
                 newPassword,
             });
+
+            this._logger.log('Auth change password!');
 
             return res.status(200).json({ message: 'Password changed' });
         } catch (error) {

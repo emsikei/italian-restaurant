@@ -10,6 +10,7 @@ import authMiddleware from '@/middleware/auth.middleware';
 import rolesMiddleware from '@/middleware/roles.middleware';
 import { slugify } from '@/helpers/index';
 import { categoryCreateValidationRules, categoryUpdateValidationRules } from '@/utils/validators/category.validator';
+import Logger from '../logger/logger.service';
 
 class CategoryController implements IController {
     public path: string = '/categories';
@@ -17,6 +18,8 @@ class CategoryController implements IController {
     public router: Router = Router();
 
     private _categoryService = new CategoryService();
+
+    private _logger = Logger.getInstance();
 
     constructor() {
         this.initialiseRoutes();
@@ -60,6 +63,8 @@ class CategoryController implements IController {
             const limit = Number(req.query.limit) || 10;
             const categories = await this._categoryService.getAllWithPagination({ page, limit });
 
+            this._logger.log('Category get all with pagination!');
+
             return res.status(200).json(categories);
         } catch (error) {
             next(error);
@@ -70,6 +75,8 @@ class CategoryController implements IController {
         try {
             const categories = await this._categoryService.getAllCategoryNames();
 
+            this._logger.log('Category get all category names!');
+
             return res.status(200).json(categories);
         } catch (error) {
             next(error);
@@ -79,6 +86,8 @@ class CategoryController implements IController {
     private getAllCategorySlugs = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
         try {
             const slugs = await this._categoryService.getAllCategorySlugs();
+
+            this._logger.log('Category get all category slugs!');
 
             return res.status(200).json(slugs);
         } catch (error) {
@@ -96,6 +105,8 @@ class CategoryController implements IController {
                 translations,
                 slug,
             });
+
+            this._logger.log('Category create!');
 
             return res.status(200).json(newCategory);
         } catch (error) {
@@ -119,6 +130,8 @@ class CategoryController implements IController {
                 return next(HttpException.NotFound());
             }
 
+            this._logger.log('Category update!');
+
             return res.status(200).json(updatedCategory);
         } catch (error) {
             next(error);
@@ -138,6 +151,8 @@ class CategoryController implements IController {
             if (!deletedCategory) {
                 return next(HttpException.NotFound());
             }
+
+            this._logger.log('Category delete!');
 
             return res.status(200).json(deletedCategory);
         } catch (error) {

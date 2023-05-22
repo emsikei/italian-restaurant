@@ -1,6 +1,7 @@
 import { NextFunction, Router, Request, Response } from 'express';
 import IController from '@/utils/interfaces/controller.interface';
 import MenuService from '@/resources/menu/menu.service';
+import Logger from '../logger/logger.service';
 
 class MenuController implements IController {
     public path: string = '/menu';
@@ -8,6 +9,8 @@ class MenuController implements IController {
     public router: Router = Router();
 
     private _menuService = new MenuService();
+
+    private _logger = Logger.getInstance();
 
     constructor() {
         this.initialiseRoutes();
@@ -25,6 +28,8 @@ class MenuController implements IController {
         try {
             const menu = await this._menuService.getOnlineMenu();
 
+            this._logger.log('Get online menu!');
+
             return res.status(200).json(menu);
         } catch (error) {
             next(error);
@@ -34,6 +39,8 @@ class MenuController implements IController {
     private getOfflineMenu = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
         try {
             const menu = await this._menuService.getOfflineMenu();
+
+            this._logger.log('Get offline menu!');
 
             return res.status(200).json(menu);
         } catch (error) {
@@ -46,6 +53,8 @@ class MenuController implements IController {
             const { slug } = req.params;
 
             const category = await this._menuService.getOneOnline(slug);
+
+            this._logger.log('Get one online menu!');
 
             return res.status(200).json(category);
         } catch (error) {

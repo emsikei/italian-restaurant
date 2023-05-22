@@ -11,6 +11,7 @@ import ILocality from '@/resources/locality/locality.interface';
 import HttpException from '@/utils/exceptions/http.exception';
 import validationMiddleware from '@/middleware/validation.middleware';
 import { localityCreateValidationRules, localityUpdateValidationRules } from '@/utils/validators/locality.validator';
+import Logger from '../logger/logger.service';
 
 class LocalityController implements IController {
     public path: string = '/localities';
@@ -18,6 +19,8 @@ class LocalityController implements IController {
     public router: Router = Router();
 
     private _localityService = new LocalityService();
+
+    private _logger = Logger.getInstance();
 
     constructor() {
         this.initialiseRoutes();
@@ -52,6 +55,9 @@ class LocalityController implements IController {
     private getAll = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
         try {
             const localities = await this._localityService.getAll();
+
+            this._logger.log('Locality get all!');
+
             return res.status(200).json(localities);
         } catch (error) {
             next(error);
@@ -68,6 +74,8 @@ class LocalityController implements IController {
             const limit = Number(req.query.limit) || 10;
             const localities = await this._localityService.getAllWithPagination({ page, limit });
 
+            this._logger.log('Locality get all with pagination!');
+
             return res.status(200).json(localities);
         } catch (error) {
             next(error);
@@ -78,6 +86,9 @@ class LocalityController implements IController {
         try {
             const { name, deliveryCost } = req.body as LocalityCreation;
             const locality = await this._localityService.create({ name, deliveryCost });
+
+            this._logger.log('Locality create!');
+
             return res.status(200).json(locality);
         } catch (error) {
             next(error);
@@ -88,6 +99,9 @@ class LocalityController implements IController {
         try {
             const { _id, name, deliveryCost } = req.body as ILocality;
             const locality = await this._localityService.update({ _id, name, deliveryCost });
+
+            this._logger.log('Locality update!');
+
             return res.status(200).json(locality);
         } catch (error) {
             next(error);
@@ -103,6 +117,9 @@ class LocalityController implements IController {
             }
 
             const locality = await this._localityService.deleteOne(id);
+
+            this._logger.log('Locality delete one!');
+
             return res.status(200).json(locality);
         } catch (error) {
             next(error);

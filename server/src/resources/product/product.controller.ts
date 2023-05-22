@@ -12,6 +12,7 @@ import rolesMiddleware from '@/middleware/roles.middleware';
 import parseMiddleware from '@/middleware/parse.middleware';
 import { productCreateValidationRules, productUpdateValidationRules } from '@/utils/validators/product.validator';
 import { booleanify } from '@/helpers/index';
+import Logger from '../logger/logger.service';
 
 const upload = multer({ dest: './src/uploads/' });
 
@@ -21,6 +22,8 @@ class ProductController implements IController {
     public router: Router = Router();
 
     private _productService = new ProductService();
+
+    private _logger = Logger.getInstance();
 
     constructor() {
         this.initialiseRoutes();
@@ -67,6 +70,8 @@ class ProductController implements IController {
                 all: booleanify(req.query.all as string),
             });
 
+            this._logger.log('Product get all!');
+
             return res.status(200).json(products);
         } catch (error) {
             next(error);
@@ -77,6 +82,8 @@ class ProductController implements IController {
         try {
             const { id } = req.params;
             const product = await this._productService.getOne(id);
+
+            this._logger.log('Product get one!');
 
             return res.status(200).json(product);
         } catch (error) {
@@ -110,6 +117,8 @@ class ProductController implements IController {
                 },
                 req.file
             );
+
+            this._logger.log('Product created!');
 
             return res.status(200).json(newProduct);
         } catch (error) {
@@ -149,6 +158,8 @@ class ProductController implements IController {
                 req.file
             );
 
+            this._logger.log('Product updated!');
+
             return res.status(200).json(updatedProduct);
         } catch (error) {
             console.log(error);
@@ -161,6 +172,8 @@ class ProductController implements IController {
             const { id } = req.params;
 
             const deletedProduct = await this._productService.delete(id);
+
+            this._logger.log('Product deleted!');
 
             return res.status(200).json(deletedProduct);
         } catch (error) {

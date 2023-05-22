@@ -8,6 +8,7 @@ import { SizeCreate } from '@/utils/types/size.types';
 import ISize from '@/resources/size/size.interface';
 import SizeService from '@/resources/size/size.service';
 import { sizeCreateValidationRules } from '@/utils/validators/size.validator';
+import Logger from '../logger/logger.service';
 
 class SizeController implements IController {
     public path: string = '/sizes';
@@ -15,6 +16,8 @@ class SizeController implements IController {
     public router: Router = Router();
 
     private _sizeService = new SizeService();
+
+    private _logger = Logger.getInstance();
 
     constructor() {
         this.initialiseRoutes();
@@ -64,6 +67,8 @@ class SizeController implements IController {
             const limit = Number(req.query.limit) || 10;
             const banners = await this._sizeService.getAllWithPagination({ page, limit });
 
+            this._logger.log('Size get all with pagination!');
+
             return res.status(200).json(banners);
         } catch (error) {
             next(error);
@@ -76,6 +81,8 @@ class SizeController implements IController {
 
             const size = await this._sizeService.create({ translations });
 
+            this._logger.log('Size create!');
+
             return res.status(200).json(size);
         } catch (error) {
             next(error);
@@ -87,6 +94,8 @@ class SizeController implements IController {
             const { _id, translations } = req.body as ISize;
 
             const size = await this._sizeService.update({ _id, translations });
+
+            this._logger.log('Size update!');
 
             return res.status(200).json(size);
         } catch (error) {

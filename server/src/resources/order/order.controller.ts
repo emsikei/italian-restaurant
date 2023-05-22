@@ -3,6 +3,7 @@ import OrderService from '@/resources/order/order.service';
 import { OrderCreate, OrderStatus } from '@/utils/types/order.types';
 import authMiddleware from '@/middleware/auth.middleware';
 import rolesMiddleware from '@/middleware/roles.middleware';
+import Logger from '../logger/logger.service';
 
 class OrderController {
     public path: string = '/orders';
@@ -10,6 +11,8 @@ class OrderController {
     public router: Router = Router();
 
     private _orderService = new OrderService();
+
+    private _logger = Logger.getInstance();
 
     constructor() {
         this.initialiseRoutes();
@@ -49,6 +52,8 @@ class OrderController {
                 deliveryCost,
             });
 
+            this._logger.log('Order created!');
+
             return res.status(200).json(order);
         } catch (error) {
             console.log(error);
@@ -70,6 +75,8 @@ class OrderController {
                 { status: req.query.status as string }
             );
 
+            this._logger.log('Order get!');
+
             return res.status(200).json(orders);
         } catch (error) {
             next(error);
@@ -82,6 +89,8 @@ class OrderController {
             const { status } = req.body as { status: OrderStatus };
 
             const order = await this._orderService.changeStatus(orderNumber, status);
+
+            this._logger.log('Order status changed!');
 
             return res.status(200).json(order);
         } catch (error) {

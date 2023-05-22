@@ -6,6 +6,7 @@ import HttpException from '@/utils/exceptions/http.exception';
 import BannerDto from '@/dtos/banner.dto';
 import authMiddleware from '@/middleware/auth.middleware';
 import rolesMiddleware from '@/middleware/roles.middleware';
+import Logger from '../logger/logger.service';
 
 const upload = multer({ dest: './src/uploads/' });
 
@@ -15,6 +16,8 @@ class BannerController implements IController {
     public router: Router = Router();
 
     private _bannerService = new BannerService();
+
+    private _logger = Logger.getInstance();
 
     constructor() {
         this.initialiseRoutes();
@@ -47,6 +50,9 @@ class BannerController implements IController {
     private getAll = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
         try {
             const banners = await this._bannerService.getAll();
+
+            this._logger.log('Banner get all!');
+
             return res.status(200).json(banners);
         } catch (error) {
             next(error);
@@ -63,6 +69,8 @@ class BannerController implements IController {
             const limit = Number(req.query.limit) || 10;
             const banners = await this._bannerService.getAllWithPagination({ page, limit });
 
+            this._logger.log('Banner get all with pagination!');
+
             return res.status(200).json(banners);
         } catch (error) {
             next(error);
@@ -74,6 +82,8 @@ class BannerController implements IController {
             if (!req.file) throw HttpException.BadRequest('NO_FILE_REQUEST');
 
             const banner = await this._bannerService.uploadOne(req.file);
+
+            this._logger.log('Banner upload one!');
 
             return res.status(200).json({ ...new BannerDto(banner) });
         } catch (error) {
@@ -89,6 +99,8 @@ class BannerController implements IController {
 
             const banner = await this._bannerService.updateOne(publicId, req.file);
 
+            this._logger.log('Banner update one!');
+
             return res.status(200).json(banner);
         } catch (error) {
             next(error);
@@ -100,6 +112,8 @@ class BannerController implements IController {
             const { publicId } = req.params;
 
             const banner = await this._bannerService.deleteOne(publicId);
+
+            this._logger.log('Banner delete one!');
 
             return res.status(200).json(banner);
         } catch (error) {
