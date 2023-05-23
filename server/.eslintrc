@@ -22,6 +22,7 @@
                 "caseSensitive": false
             }
         ],
+        "no-unused-vars": "off",
         "no-console": "warn",
         "init-declarations": "off",
         "prettier/prettier": [

@@ -11,7 +11,20 @@ interface CustomOptions {
     };
 }
 
-class MailService {
+interface MailOptions {
+    from: string;
+    to: string;
+    subject: string;
+    text: string;
+    html: string;
+    link?: string;
+}
+
+export interface IMailService {
+    sendMail(options: MailOptions): Promise<void>;
+}
+
+export class ResetPasswordLinkMail implements IMailService {
     private transporter;
 
     constructor() {
@@ -26,21 +39,17 @@ class MailService {
         } as SMTPTransport.Options);
     }
 
-    public async sendPasswordResetLink(to: string, link: string): Promise<void> {
+    public async sendMail(options: MailOptions): Promise<void> {
         await this.transporter.sendMail({
-            from: process.env.SMTP_USER,
-            to,
+            from: options.from,
+            to: options.to,
             subject: `Vinopizza.md. Password restore`,
             text: '',
             html: `
                 <div>
-                    <h1>Your password reset link (expires in 5 minutes): <a href="${link}">${link}</a></h1>
+                    <h1>Your password reset link (expires in 5 minutes): <a href="${options.link}">${options.link}</a></h1>
                 </div>
             `,
         });
     }
 }
-
-export default MailService;
-
-export {};

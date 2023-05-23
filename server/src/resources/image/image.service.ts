@@ -6,8 +6,22 @@ import fs from 'fs';
 import cloudinary from '@/config/cloudinary';
 import HttpException from '@/utils/exceptions/http.exception';
 
-class ImageService {
-    public uploadImage = async (filename: string, folder: string): Promise<{ [key: string]: string }> => {
+interface IUploadResult {
+    secureUrl: string;
+    publicId: string;
+}
+
+interface IImageUploader {
+    uploadImage(filename: string, folder: string): Promise<IUploadResult>;
+    destroyImage(publicId: string, folder: string): Promise<string>;
+}
+
+interface ILocalImageDeleter {
+    deleteImageLocally(imageName: string): void;
+}
+
+export class ImageService implements IImageUploader, ILocalImageDeleter {
+    public async uploadImage(filename: string, folder: string): Promise<IUploadResult> {
         try {
             await sharp(`./src/uploads/${filename}`)
                 .resize({ width: 1000 })
@@ -29,9 +43,9 @@ class ImageService {
         } catch (error: any) {
             throw new HttpException(error.status, error.message);
         }
-    };
+    }
 
-    public destroyImage = async (publicId: string, folder: string): Promise<string> => {
+    public async destroyImage(publicId: string, folder: string): Promise<string> {
         try {
             const { result } = await cloudinary.uploader.destroy(`${folder}${publicId}.webp`, { resource_type: 'raw' });
 
@@ -39,16 +53,14 @@ class ImageService {
         } catch (error: any) {
             throw new HttpException(error.status, error.message);
         }
-    };
+    }
 
-    private deleteImageLocally = (imageName: string): void => {
+    public deleteImageLocally(imageName: string): void {
         const filePath = path.resolve('./src/uploads', imageName);
         fs.unlink(filePath, (err) => {
             if (err) {
                 throw new HttpException(500, 'Internal Error');
             }
         });
-    };
+    }
 }
-
-export default ImageService;

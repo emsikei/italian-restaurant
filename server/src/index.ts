@@ -11,6 +11,7 @@ import MenuController from '@/resources/menu/menu.controller';
 import UserController from '@/resources/user/user.controller';
 import SizeController from '@/resources/size/size.controller';
 import OrderController from '@/resources/order/order.controller';
+import { UserService } from './resources/user/user.service';
 
 const app = new App(
     [
@@ -22,7 +23,7 @@ const app = new App(
         new AuthController(),
         new LocalityController(),
         new BannerController(),
-        new UserController(),
+        new UserController(new UserService()),
     ],
     process.env.PORT
 );

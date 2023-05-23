@@ -7,7 +7,19 @@ import TokenModel from '@/resources/token/token.model';
 import HttpException from '@/utils/exceptions/http.exception';
 import { TokenExpirationTime } from '@/utils/constants';
 
-class JwtTokenService {
+export interface IJwtTokenService {
+    generateAccessToken(payload: UserDto): string;
+    validateAccessToken(token: string): UserDto | null;
+    createRefreshToken(userId: string, browserData: BrowserData): Promise<string>;
+    addRefreshToken(userId: string, browserData: BrowserData): Promise<string>;
+    refreshTokenSession(
+        browserData: BrowserData,
+        refreshToken: string
+    ): Promise<{ refreshToken: string; userId: string }>;
+    removeRefreshToken(refreshToken: string, fingerprint: string): Promise<{ refreshToken: string }>;
+}
+
+export class JwtTokenService implements IJwtTokenService {
     private _tokenModel = TokenModel;
 
     public generateAccessToken = (payload: UserDto): string => {
@@ -115,5 +127,3 @@ class JwtTokenService {
         return { refreshToken: removedToken.refreshToken };
     };
 }
-
-export default JwtTokenService;

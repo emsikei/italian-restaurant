@@ -3,7 +3,18 @@ import IUser from '@/resources/user/user.interface';
 import { ResetPasswordToken, UserRegistration } from '@/utils/types';
 import HttpException from '@/utils/exceptions/http.exception';
 
-class UserService {
+export interface IUserService {
+    findByEmail(email: string): Promise<IUser | null>;
+    findByToken(token: string): Promise<IUser | null>;
+    findById(id: string): Promise<IUser>;
+    getAll(): Promise<IUser[]>;
+    create(user: UserRegistration): Promise<IUser>;
+    addToken(email: string, token: ResetPasswordToken): Promise<IUser | null>;
+    resetPassword(hashedPassword: string, token: string, updatedToken: ResetPasswordToken): Promise<void>;
+    updatePassword(email: string, newPassword: string): Promise<IUser | null>;
+}
+
+export class UserService implements IUserService {
     private _userModel = UserModel;
 
     public findByEmail = async (email: string): Promise<IUser | null> => {
@@ -63,5 +74,3 @@ class UserService {
         return user;
     };
 }
-
-export default UserService;

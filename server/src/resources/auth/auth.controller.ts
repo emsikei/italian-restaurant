@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction, Router } from 'express';
 
 import IController from '@/utils/interfaces/controller.interface';
-import AuthService from '@/resources/auth/auth.service';
+import { IAuthService, AuthService } from '@/resources/auth/auth.service';
 import { UserLogin, UserRegistration, ChangePassword } from '@/utils/types';
 import {
     userLoginValidationRules,
@@ -14,13 +14,20 @@ import validationMiddleware from '@/middleware/validation.middleware';
 import authMiddleware from '@/middleware/auth.middleware';
 import { accessTokenOptions, refreshTokenOptions } from '@/utils/constants';
 import Logger from '../logger/logger.service';
+import { JwtTokenService } from '../token/token.service';
+import { ResetPasswordLinkMail } from '../mail/mail.service';
+import { UserService } from '../user/user.service';
 
 class AuthController implements IController {
     public path: string = '/auth';
 
     public router: Router = Router();
 
-    private _authService = new AuthService();
+    private _authService: IAuthService = new AuthService(
+        new UserService(),
+        new JwtTokenService(),
+        new ResetPasswordLinkMail()
+    );
 
     private _logger = Logger.getInstance();
 

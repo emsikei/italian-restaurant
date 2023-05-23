@@ -2,7 +2,7 @@ import { Request, Response, NextFunction, Router } from 'express';
 
 import IController from '@/utils/interfaces/controller.interface';
 import authMiddleware from '@/middleware/auth.middleware';
-import UserService from '@/resources/user/user.service';
+import { IUserService, UserService } from '@/resources/user/user.service';
 import UserDto from '@/dtos/user.dto';
 import Logger from '../logger/logger.service';
 
@@ -11,11 +11,12 @@ class UserController implements IController {
 
     public router: Router = Router();
 
-    private _userService = new UserService();
+    private _userService: IUserService = new UserService();
 
     private _logger = Logger.getInstance();
 
-    constructor() {
+    constructor(userService: IUserService) {
+        this._userService = userService;
         this.initialiseRoutes();
     }
 

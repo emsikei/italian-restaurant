@@ -2,13 +2,13 @@ import bcrypt from 'bcrypt';
 import * as uuid from 'uuid';
 
 import IUser from '@/resources/user/user.interface';
-import UserService from '@/resources/user/user.service';
-import JwtTokenService from '@/resources/token/token.service';
+import { IUserService } from '@/resources/user/user.service';
+import { IJwtTokenService } from '@/resources/token/token.service';
 import HttpException from '@/utils/exceptions/http.exception';
 import { UserLogin, UserRegistration, ChangePassword, ResetPasswordToken } from '@/utils/types';
 import UserDto from '@/dtos/user.dto';
-import MailService from '../mail/mail.service';
 import { BrowserData } from '@/utils/types/common.types';
+import { IMailService } from '../mail/mail.service';
 
 type AuthResponse = {
     user: UserDto;
@@ -16,12 +16,29 @@ type AuthResponse = {
     refreshToken: string;
 };
 
-class AuthService {
-    private _userService = new UserService();
+export interface IAuthService {
+    register(user: UserRegistration, browserData: BrowserData): Promise<AuthResponse>;
+    login(credentials: UserLogin, browserData: BrowserData): Promise<AuthResponse>;
+    logout(refreshToken: string, fingerprint: string): Promise<{ refreshToken: string }>;
+    refreshTokens(browserData: BrowserData, refreshToken: string): Promise<AuthResponse>;
+    sendEmailForPasswordReset(email: string): Promise<void>;
+    processTokenForPasswordReset(token: string): Promise<boolean>;
+    resetPassword(token: string, newPassword: string): Promise<void>;
+    changePassword(data: ChangePassword): Promise<IUser>;
+}
 
-    private _jwtTokenService = new JwtTokenService();
+export class AuthService implements IAuthService {
+    private _userService: IUserService;
 
-    private _mailService = new MailService();
+    private _jwtTokenService: IJwtTokenService;
+
+    private _mailService: IMailService;
+
+    constructor(userService: IUserService, jwtTokenService: IJwtTokenService, mailService: IMailService) {
+        this._userService = userService;
+        this._jwtTokenService = jwtTokenService;
+        this._mailService = mailService;
+    }
 
     public register = async (user: UserRegistration, browserData: BrowserData): Promise<AuthResponse> => {
         const candidate = await this._userService.findByEmail(user.email);
@@ -126,10 +143,14 @@ class AuthService {
 
         if (!user) throw HttpException.NotFound('USER_NOT_FOUND');
 
-        await this._mailService.sendPasswordResetLink(
-            email,
-            `${process.env.API_URL}/api/v1/auth/password-reset/${token.value}`
-        );
+        await this._mailService.sendMail({
+            from: '',
+            to: '',
+            subject: '',
+            text: '',
+            html: '',
+            link: `${process.env.API_URL}/api/v1/auth/password-reset/${token.value}`,
+        });
     };
 
     public processTokenForPasswordReset = async (token: string): Promise<boolean> => {
@@ -184,5 +205,3 @@ class AuthService {
         return updatedUser;
     };
 }
-
-export default AuthService;
