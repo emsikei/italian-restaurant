@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import JwtTokenService from '@/resources/token/token.service';
+import { JwtTokenService } from '@/resources/token/token.service';
 import HttpException from '@/utils/exceptions/http.exception';
 
 export default function authMiddleware(req: Request, res: Response, next: NextFunction) {

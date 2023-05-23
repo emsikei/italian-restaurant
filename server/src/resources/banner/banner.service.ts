@@ -1,7 +1,7 @@
 import { Express } from 'express';
 import IBanner from '@/resources/banner/banner.interface';
 import BannerModel from '@/resources/banner/banner.model';
-import ImageService from '@/resources/image/image.service';
+import { ImageService } from '@/resources/image/image.service';
 import HttpException from '@/utils/exceptions/http.exception';
 import { BannersWithPagination } from '@/utils/types/banner.types';
 import { PaginationQuery } from '@/utils/types/common.types';

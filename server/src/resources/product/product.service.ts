@@ -5,7 +5,7 @@ import CategoryModel from '@/resources/category/category.model';
 import IProduct from '@/resources/product/product.interface';
 import { ProductCreation, ProductsWithPagination, ProductUpdate } from '@/utils/types';
 import HttpException from '@/utils/exceptions/http.exception';
-import ImageService from '@/resources/image/image.service';
+import { ImageService } from '@/resources/image/image.service';
 import { ProductsQuery } from '@/utils/types/product.types';
 
 class ProductService {

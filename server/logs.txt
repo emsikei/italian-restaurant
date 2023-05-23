@@ -24,3 +24,24 @@
 [2023-05-22T21:09:31.217Z] Banner get all!
 [2023-05-22T21:09:31.411Z] Locality get all with pagination!
 [2023-05-22T21:09:32.040Z] Get online menu!
+[2023-05-23T12:59:34.809Z] Get online menu!
+[2023-05-23T12:59:42.157Z] Banner get all!
+[2023-05-23T12:59:42.726Z] Get online menu!
+[2023-05-23T13:01:11.669Z] Auth login!
+[2023-05-23T13:01:11.816Z] User get me!
+[2023-05-23T13:01:12.126Z] Locality get all with pagination!
+[2023-05-23T13:01:14.243Z] Category get all category names!
+[2023-05-23T13:01:14.455Z] Product get all!
+[2023-05-23T13:02:52.669Z] Product created!
+[2023-05-23T13:02:54.382Z] Size get all with pagination!
+[2023-05-23T13:02:55.439Z] Banner get all with pagination!
+[2023-05-23T13:03:02.808Z] Banner upload one!
+[2023-05-23T13:03:04.330Z] Size get all with pagination!
+[2023-05-23T13:03:05.295Z] Category get all category names!
+[2023-05-23T13:03:05.399Z] Product get all!
+[2023-05-23T13:03:41.677Z] Product created!
+[2023-05-23T13:03:53.875Z] Get online menu!
+[2023-05-23T13:04:01.018Z] Get online menu!
+[2023-05-23T13:04:06.998Z] Banner get all!
+[2023-05-23T13:04:07.073Z] Locality get all with pagination!
+[2023-05-23T13:04:07.776Z] Get online menu!

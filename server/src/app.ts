@@ -13,7 +13,7 @@ import Fingerprint from 'express-fingerprint';
 import { Server } from 'http';
 import errorMiddleware from '@/middleware/error.middleware';
 import Controller from '@/utils/interfaces/controller.interface';
-import UserService from '@/resources/user/user.service';
+import { UserService } from '@/resources/user/user.service';
 
 class App {
     private express: Application;
